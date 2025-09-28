@@ -56,11 +56,13 @@ $ yarn add expo-skeleton-loading
 # Setup
 This package is based on react-natve-reanimated 3 so according to their documentation, 
 you need to initialize that in babel.config.js. To do that stop the metro bundler and
-then add following line of code to the return object of babel.config.js
+then add following line of code to the return object of babel.config.js when you need to configure the plugin manually
 
 ```js
-plugins: ['react-native-reanimated/plugin']
+plugins: ['react-native-worklets/plugin']
 ```
+
+Expo SDK 54 and newer automatically applies this plugin for managed projects, so manual configuration is only necessary when working outside of Expo or on older SDK versions.
 
 After adding the line of code, start the bundler or project with --clear tag like,
 
