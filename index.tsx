@@ -1,40 +1,35 @@
-import React, {ReactElement} from "react";
-import { View, StyleSheet } from "react-native";
+import React, { type ReactNode } from "react";
+import { View, StyleSheet, type LayoutRectangle } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-import Reanimated,{ useSharedValue, withRepeat, useAnimatedStyle, withTiming, interpolate  } from "react-native-reanimated";
+import Reanimated, { useSharedValue, withRepeat, useAnimatedStyle, withTiming, interpolate } from "react-native-reanimated";
 
-
-interface SkeletonProps {
+type SkeletonLoadingProps = React.PropsWithChildren<{
     /**
      * background of the loader componenet hexcode
      */
-    background: string,
+    background: string;
 
     /**
      * highlight color of the loader component hexcode
      */
-    highlight: string,
-
-    /**
-     * the children components inside SkeletonLoading
-     */
-    children: ReactElement
-    
-}
+    highlight: string;
+}>;
 
 
-const SkeletonLoading: React.FC<SkeletonProps> = ({ 
-        children, 
-        background, 
-        highlight 
-}) => {
+const SkeletonLoading = ({
+        children,
+        background,
+        highlight
+}: SkeletonLoadingProps) => {
 
-    const [layout, setLayout] = React.useState();
-    const shared = useSharedValue(0);
+    const [layout, setLayout] = React.useState<LayoutRectangle | null>(null);
+    const shared = useSharedValue<number>(0);
+    const maskedChildren: ReactNode = children ?? null;
 
     const animStyle = useAnimatedStyle(() => {
-        const x = interpolate( shared.value, [0, 1], [layout ? -layout.width : 0, layout ? layout.width : 0], )
+        const width = layout?.width ?? 0;
+        const x = interpolate( shared.value, [0, 1], [ -width, width ], )
         return {
             transform: [ { translateX: x }, ]
         }
@@ -52,15 +47,15 @@ const SkeletonLoading: React.FC<SkeletonProps> = ({
     if (!layout) {
         return (
           <View onLayout={event => setLayout(event.nativeEvent.layout)}>
-            {children}
+            {maskedChildren}
           </View>
         );
     }
 
-    
+
     return(
         <MaskedView
-            maskElement={children}
+            maskElement={maskedChildren}
             style={{ width: layout.width, height: layout.height }}
         >
             <View style={[styles.container, { backgroundColor: background }]} />
